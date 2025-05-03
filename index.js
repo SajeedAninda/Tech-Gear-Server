@@ -30,6 +30,29 @@ async function run() {
     // COLLECTIONS 
     const userCollection = client.db("TechGear").collection("users");
 
+
+
+    // POST USER DATA TO DB WHEN REGISTERING
+    app.post("/registerUser", async (req, res) => {
+        let user = req.body;
+        let result = await userCollection.insertOne(user);
+        res.send(result);
+      })
+
+     // POST USER DATA TO DB WHEN REGISTERING/LOGGIN WITH GOOGLE
+    app.post("/googleLogin", async (req, res) => {
+        const userDetails = req.body;
+        let checkEmail = userDetails.email;
+        const existingUser = await userCollection.findOne({ email: checkEmail });
+  
+        if (existingUser) {
+          return res.status(409).json({ error: 'Email exists' });
+        }
+  
+        let result = await userCollection.insertOne(userDetails);
+        res.send(result);
+      });
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

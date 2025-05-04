@@ -53,6 +53,16 @@ async function run() {
         res.send(result);
       });
 
+      //GET API FOR RETREIVING THE CURRENT USER DATA 
+    app.get("/userData/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = {
+        email: email,
+      };
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

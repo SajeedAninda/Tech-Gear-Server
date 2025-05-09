@@ -29,6 +29,7 @@ async function run() {
 
     // COLLECTIONS 
     const userCollection = client.db("TechGear").collection("users");
+    const productsCollection = client.db("TechGear").collection("products");
 
 
 
@@ -62,6 +63,13 @@ async function run() {
       const result = await userCollection.findOne(query);
       res.send(result);
     });
+
+    // API TO POST AND ADD ALL PRODUCTS 
+    app.post("/addProducts", async (req, res) => {
+      let products = req.body;
+      let result = await productsCollection.insertOne(products);
+      res.send(result);
+    })
 
   } finally {
     // Ensures that the client will close when you finish/error

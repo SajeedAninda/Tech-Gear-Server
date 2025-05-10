@@ -71,6 +71,12 @@ async function run() {
       res.send(result);
     })
 
+    // API TO GET EVERY PRODUCTS 
+    app.get("/allProducts", async (req, res) => {
+      let result = await productsCollection.find().toArray();
+      res.send(result);
+    })
+
 
   } finally {
     // Ensures that the client will close when you finish/error

@@ -77,6 +77,75 @@ async function run() {
       res.send(result);
     })
 
+    // API to Filter Products from backend
+    app.get("/filteredProducts", async (req, res) => {
+      try {
+        const {
+          search,
+          minPrice,
+          maxPrice,
+          category,
+          brand,
+          tagline,
+          minRating,
+          sortBy
+        } = req.query;
+
+        const query = {};
+
+        // Text search (case insensitive)
+        if (search) {
+          query.name = { $regex: search, $options: 'i' };
+        }
+
+        // Price range filtering
+        if (minPrice || maxPrice) {
+          query.price = {};
+          if (minPrice) query.price.$gte = Number(minPrice);
+          if (maxPrice) query.price.$lte = Number(maxPrice);
+        }
+
+        // Category filtering
+        if (category) query.category = category;
+
+        // Brand filtering
+        if (brand) query.brand = brand;
+
+        // Tagline filtering
+        if (tagline) query.tagline = tagline;
+
+        // Minimum rating filtering
+        if (minRating) query.rating = { $gte: Number(minRating) };
+
+        // Sorting options
+        let sort = {};
+        if (sortBy === 'low-to-high') sort.price = 1;
+        else if (sortBy === 'high-to-low') sort.price = -1;
+        else if (sortBy === 'rating') sort.rating = -1;
+        else if (sortBy === 'newest') sort.createdAt = -1;
+        else if (sortBy === 'discount') sort.discount = -1;
+
+        // Execute query with filters and sorting
+        const products = await productsCollection
+          .find(query)
+          .sort(sort)
+          .toArray();
+
+        res.send({
+          success: true,
+          data: products,
+          count: products.length
+        });
+
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).send({
+          success: false,
+          message: 'Error fetching products'
+        });
+      }
+    });
+
 
   } finally {
     // Ensures that the client will close when you finish/error

@@ -88,36 +88,28 @@ async function run() {
           brand,
           tagline,
           minRating,
-          sortBy
+          sortBy,
+          page = 1
         } = req.query;
 
         const query = {};
+        const perPage = 12;
 
-        // Text search (case insensitive)
         if (search) {
           query.name = { $regex: search, $options: 'i' };
         }
 
-        // Price range filtering
         if (minPrice || maxPrice) {
           query.price = {};
           if (minPrice) query.price.$gte = Number(minPrice);
           if (maxPrice) query.price.$lte = Number(maxPrice);
         }
 
-        // Category filtering
         if (category) query.category = category;
-
-        // Brand filtering
         if (brand) query.brand = brand;
-
-        // Tagline filtering
         if (tagline) query.tagline = tagline;
-
-        // Minimum rating filtering
         if (minRating) query.rating = { $gte: Number(minRating) };
 
-        // Sorting options
         let sort = {};
         if (sortBy === 'low-to-high') sort.price = 1;
         else if (sortBy === 'high-to-low') sort.price = -1;
@@ -125,16 +117,25 @@ async function run() {
         else if (sortBy === 'newest') sort.createdAt = -1;
         else if (sortBy === 'discount') sort.discount = -1;
 
-        // Execute query with filters and sorting
+        const totalProducts = await productsCollection.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts / perPage);
+
         const products = await productsCollection
           .find(query)
           .sort(sort)
+          .skip((Number(page) - 1) * perPage)
+          .limit(perPage)
           .toArray();
 
         res.send({
           success: true,
           data: products,
-          count: products.length
+          pagination: {
+            totalProducts,
+            totalPages,
+            currentPage: Number(page),
+            perPage
+          }
         });
 
       } catch (error) {

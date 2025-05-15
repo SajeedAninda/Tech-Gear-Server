@@ -147,6 +147,14 @@ async function run() {
       }
     });
 
+    // API TO DELETE A PRODUCT
+    app.delete("/deleteProduct/:id", async (req, res) => {
+      let id = req.params.id;
+      let query = { _id: new ObjectId(id) };
+      let result = await productsCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
   } finally {
     // Ensures that the client will close when you finish/error

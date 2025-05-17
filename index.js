@@ -155,6 +155,14 @@ async function run() {
       res.send(result);
     })
 
+    // API TO GET A SPECIFIC PRODUCT BASED ON ID 
+    app.get("/productDetails/:id", async (req, res) => {
+      let id = req.params.id;
+      let query = { _id: new ObjectId(id) };
+      let result = await productsCollection.findOne(query);
+      res.send(result);
+    })
+
 
   } finally {
     // Ensures that the client will close when you finish/error

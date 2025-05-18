@@ -163,6 +163,34 @@ async function run() {
       res.send(result);
     })
 
+    // API TO UPDATE PRODUCTS 
+    app.patch("/updateProduct/:id", async (req, res) => {
+      const id = req.params.id;
+      const product = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedProduct = {
+        $set: {
+          name: product.name,
+          shortDesc: product.shortDesc,
+          longDesc: product.longDesc,
+          price: product.price,
+          discount: product.discount,
+          tagline: product.tagline,
+          rating: product.rating,
+          category: product.category,
+          brand: product.brand,
+          productImages: product.productImages
+        },
+      };
+      const result = await productsCollection.updateOne(
+        filter,
+        updatedProduct,
+        options
+      );
+      res.send(result);
+    });
+
 
   } finally {
     // Ensures that the client will close when you finish/error

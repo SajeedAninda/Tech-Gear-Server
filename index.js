@@ -30,6 +30,7 @@ async function run() {
     // COLLECTIONS 
     const userCollection = client.db("TechGear").collection("users");
     const productsCollection = client.db("TechGear").collection("products");
+    const cartCollection = client.db("TechGear").collection("cart");
 
 
 
@@ -191,6 +192,12 @@ async function run() {
       res.send(result);
     });
 
+    // API TO POST CART DATA TO CART COLLECTION 
+    app.post("/addToCart", async (req, res) => {
+      let cartData = req.body;
+      let result = await cartCollection.insertOne(cartData);
+      res.send(result);
+    })
 
   } finally {
     // Ensures that the client will close when you finish/error

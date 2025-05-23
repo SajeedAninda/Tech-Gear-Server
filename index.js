@@ -220,6 +220,12 @@ async function run() {
       }
     });
 
+    // API TO GET ALL REGISTERED USERS 
+    app.get("/allUsers", async (req, res) => {
+      let result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

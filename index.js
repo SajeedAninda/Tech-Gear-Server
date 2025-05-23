@@ -192,32 +192,33 @@ async function run() {
       res.send(result);
     });
 
-   app.post("/addToCart", async (req, res) => {
-  try {
-    const cartData = req.body;
-    const { _id, userEmail, productQuantity } = cartData;
+    // API TO ADD TO CART 
+    app.post("/addToCart", async (req, res) => {
+      try {
+        const cartData = req.body;
+        const { _id, userEmail, productQuantity } = cartData;
 
-    const existingItem = await cartCollection.findOne({
-      _id: _id,
-      userEmail: userEmail
+        const existingItem = await cartCollection.findOne({
+          _id: _id,
+          userEmail: userEmail
+        });
+
+        let result;
+        if (existingItem) {
+          result = await cartCollection.updateOne(
+            { _id: _id, userEmail: userEmail },
+            { $inc: { productQuantity: productQuantity } }
+          );
+        } else {
+          result = await cartCollection.insertOne(cartData);
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        res.status(500).send("Error adding to cart");
+      }
     });
-
-    let result;
-    if (existingItem) {
-      result = await cartCollection.updateOne(
-        { _id: _id, userEmail: userEmail },
-        { $inc: { productQuantity: productQuantity } }
-      );
-    } else {
-      result = await cartCollection.insertOne(cartData);
-    }
-
-    res.send(result);
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    res.status(500).send("Error adding to cart");
-  }
-});
 
   } finally {
     // Ensures that the client will close when you finish/error

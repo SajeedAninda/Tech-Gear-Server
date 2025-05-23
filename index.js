@@ -226,6 +226,14 @@ async function run() {
       res.send(result);
     })
 
+    // API TO DELETE AN USER
+    app.delete("/deleteUser/:id", async (req, res) => {
+      let id = req.params.id;
+      let query = { _id: new ObjectId(id) };
+      let result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();

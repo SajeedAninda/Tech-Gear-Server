@@ -220,6 +220,14 @@ async function run() {
       }
     });
 
+    // API TO GET CART BASED ON USER 
+    app.get("/getCart/:userEmail", async (req, res) => {
+      let email = req.params.userEmail
+      let query = { userEmail: email };
+      let result = await cartCollection.find(query).toArray();
+      res.send(result);
+    })
+
     // API TO GET ALL REGISTERED USERS 
     app.get("/allUsers", async (req, res) => {
       let result = await userCollection.find().toArray();

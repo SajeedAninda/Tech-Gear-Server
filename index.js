@@ -193,31 +193,31 @@ async function run() {
     });
 
     app.post("/addToCart", async (req, res) => {
-  try {
-    const cartData = req.body;
-    const { productId, userEmail, productQuantity } = cartData;
+      try {
+        const cartData = req.body;
+        const { productId, userEmail, productQuantity } = cartData;
 
-    const existingItem = await cartCollection.findOne({
-      productId: productId,
-      userEmail: userEmail
+        const existingItem = await cartCollection.findOne({
+          productId: productId,
+          userEmail: userEmail
+        });
+
+        let result;
+        if (existingItem) {
+          result = await cartCollection.updateOne(
+            { productId: productId, userEmail: userEmail },
+            { $inc: { productQuantity: productQuantity } }
+          );
+        } else {
+          result = await cartCollection.insertOne(cartData);
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        res.status(500).send("Error adding to cart");
+      }
     });
-
-    let result;
-    if (existingItem) {
-      result = await cartCollection.updateOne(
-        { productId: productId, userEmail: userEmail },
-        { $inc: { productQuantity: productQuantity } }
-      );
-    } else {
-      result = await cartCollection.insertOne(cartData);
-    }
-
-    res.send(result);
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    res.status(500).send("Error adding to cart");
-  }
-});
 
 
     // API TO GET CART BASED ON USER 

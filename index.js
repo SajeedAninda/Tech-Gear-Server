@@ -192,6 +192,7 @@ async function run() {
       res.send(result);
     });
 
+    // API TO ADD TO CART 
     app.post("/addToCart", async (req, res) => {
       try {
         const cartData = req.body;
@@ -218,6 +219,24 @@ async function run() {
         res.status(500).send("Error adding to cart");
       }
     });
+
+    // API TO UPDATE CART PRODUCT QUANTITY 
+    app.patch('/updateCartPrdtQty/:id', async (req, res) => {
+      const { id } = req.params
+      const { quantity } = req.body
+
+      if (!quantity || quantity < 1 || quantity > 10) {
+        return res.status(400).json({ error: 'Quantity must be between 1 and 10' })
+      }
+
+      await cartCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { productQuantity: quantity } }
+      )
+
+      res.json({ message: 'Quantity updated' })
+    })
+
 
 
     // API TO GET CART BASED ON USER 

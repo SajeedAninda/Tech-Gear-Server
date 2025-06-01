@@ -31,6 +31,7 @@ async function run() {
     const userCollection = client.db("TechGear").collection("users");
     const productsCollection = client.db("TechGear").collection("products");
     const cartCollection = client.db("TechGear").collection("cart");
+    const orderCollection = client.db("TechGear").collection("orders");
 
 
 
@@ -237,8 +238,6 @@ async function run() {
       res.json({ message: 'Quantity updated' })
     })
 
-
-
     // API TO GET CART BASED ON USER 
     app.get("/getCart/:userEmail", async (req, res) => {
       let email = req.params.userEmail
@@ -252,6 +251,13 @@ async function run() {
       let id = req.params.id;
       let query = { _id: new ObjectId(id) };
       let result = await cartCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    // API TO CREATE ORDER AS USER 
+    app.post("/createOrder", async (req, res) => {
+      let order = req.body;
+      let result = await orderCollection.insertOne(order);
       res.send(result);
     })
 

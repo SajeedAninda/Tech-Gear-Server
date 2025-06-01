@@ -254,12 +254,24 @@ async function run() {
       res.send(result);
     })
 
-    // API TO CREATE ORDER AS USER 
     app.post("/createOrder", async (req, res) => {
-      let order = req.body;
-      let result = await orderCollection.insertOne(order);
-      res.send(result);
-    })
+      const order = req.body;
+      const orderResult = await orderCollection.insertOne(order);
+
+      if (orderResult.insertedId) {
+        const userEmail = order.userEmail;
+        const deleteResult = await cartCollection.deleteMany({ userEmail });
+
+        res.send({
+          insertedId: orderResult.insertedId,
+          deletedCount: deleteResult.deletedCount,
+          message: "Order created and cart cleared",
+        });
+      } else {
+        res.status(500).send({ message: "Failed to insert order" });
+      }
+    });
+
 
     // API TO GET ALL REGISTERED USERS 
     app.get("/allUsers", async (req, res) => {

@@ -272,6 +272,12 @@ async function run() {
       }
     });
 
+    // API TO GET ALL ORDERS 
+    app.get("/allOrders", async (req, res) => {
+      let result = await orderCollection.find().toArray();
+      res.send(result);
+    })
+
 
     // API TO GET ALL REGISTERED USERS 
     app.get("/allUsers", async (req, res) => {

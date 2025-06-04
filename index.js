@@ -278,6 +278,14 @@ async function run() {
       res.send(result);
     })
 
+    // API TO GET ORDERS BASED ON USER 
+    app.get("/userOrders/:userEmail", async (req, res) => {
+      let email = req.params.userEmail
+      let query = { userEmail: email };
+      let result = await orderCollection.find(query).toArray();
+      res.send(result);
+    })
+
 
     // API TO GET ALL REGISTERED USERS 
     app.get("/allUsers", async (req, res) => {
